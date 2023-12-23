@@ -1,0 +1,48 @@
+<Schema name="OpenFoodFactsAnalysis">
+
+  <!-- Version Dimension -->
+  <Dimension name="Version">
+    <Hierarchy hasAll="true" allMemberName="All Versions" primaryKey="version_id">
+      <Table name="Version" schema="base_gnajeralavid"/>
+      <Level name="NutriScorePresence" column="nutriscore_presence" type="String" uniqueMembers="true"/>
+      <Level name="ProductVersion" column="version_id" type="String" uniqueMembers="true"/>
+    </Hierarchy>
+  </Dimension>
+
+  <Cube name="OpenFoodFactsCube">
+    <Table name="FactTable1" schema="base_gnajeralavid"/>
+
+    <!-- Time Dimension -->
+    <Dimension name="Time">
+      <Hierarchy hasAll="true" allMemberName="All Times">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="YearCreation" column="YearCreation" type="Numeric" uniqueMembers="true"/>
+        <Level name="YearModification" column="YearModification" type="Numeric" uniqueMembers="true"/>
+        <Level name="MonthModification" column="MonthModification" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+      <!-- Product Dimension -->
+    <Dimension name="Product">
+      <Hierarchy hasAll="true" allMemberName="All Products">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="Barcode" column="barcode" type="String" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Using Shared Version Dimension -->
+    <DimensionUsage source="Version" name="Version" foreignKey="version_id"/>
+
+    <!-- Contributor Dimension -->
+    <Dimension name="Contributor">
+      <Hierarchy hasAll="true" allMemberName="All Contributors">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="Pseudo" column="pseudo" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Measures -->
+    <Measure name="ProductCount" column="barcode" aggregator="distinct-count" visible="true"/>
+    <Measure name="VersionCount" column="version_id" aggregator="count" visible="true"/>
+  </Cube>
+</Schema>

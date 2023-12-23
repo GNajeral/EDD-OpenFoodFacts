@@ -1,0 +1,130 @@
+<Schema name="OpenFoodFactsAnalysis">
+
+  <!-- Version Dimension -->
+  <Dimension name="Version">
+    <Hierarchy name="By NutriScorePresence" hasAll="true" allMemberName="All Versions" primaryKey="version_id">
+      <Table name="Version" schema="base_gnajeralavid"/>
+      <Level name="NutriScorePresence" column="nutriscore_presence" type="String" uniqueMembers="false"/>
+      <Level name="ProductVersion" column="version_id" type="String" uniqueMembers="true"/>
+    </Hierarchy>
+    <Hierarchy name="By NovaGroup" hasAll="true" allMemberName="All Versions" primaryKey="version_id">
+      <Table name="Version" schema="base_gnajeralavid"/>
+      <Level name="NovaGroup" column="nova_group" type="String" uniqueMembers="false"/>
+      <Level name="ProductVersion" column="version_id" type="String" uniqueMembers="true"/>
+    </Hierarchy>
+  </Dimension>
+
+  <!-- Category Dimension -->
+  <Dimension name="Category">
+    <Hierarchy hasAll="true" allMemberName="All Categories" primaryKey="pnns2">
+      <Table name="Category" schema="base_gnajeralavid"/>
+      <Level name="Pnns1" column="pnns1" type="String" uniqueMembers="true"/>
+      <Level name="Pnns2" column="pnns2" type="String" uniqueMembers="true"/>
+    </Hierarchy>
+  </Dimension>
+
+  <!-- Contributor Dimension -->
+  <Dimension name="Contributor">
+    <Hierarchy hasAll="true" allMemberName="All Contributors" primaryKey="pseudo">
+      <Table name="Contributor" schema="base_gnajeralavid"/>
+      <Level name="Pseudo" column="pseudo" type="String" uniqueMembers="true"/>
+    </Hierarchy>
+  </Dimension>
+
+  <!-- OFF Cube 1 -->
+  <Cube name="OpenFoodFactsCube1">
+    <Table name="FactTable1" schema="base_gnajeralavid"/>
+
+    <!-- Using Shared Version Dimension -->
+    <DimensionUsage source="Version" name="Version" foreignKey="version_id"/>
+
+    <!-- Using Shared Category Dimension -->
+    <DimensionUsage source="Category" name="Category" foreignKey="pnns2"/>
+
+    <!-- Using Shared Contributor Dimension -->
+    <DimensionUsage source="Contributor" name="Contributor" foreignKey="pseudo"/>
+
+    <!-- Creation Time Dimension -->
+    <Dimension name="TimeCreation">
+      <Hierarchy hasAll="true" allMemberName="All Times">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="YearCreation" column="YearCreation" type="Numeric" uniqueMembers="true"/>
+        <Level name="MonthCreation" column="MonthCreation" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Modification Time Dimension -->
+    <Dimension name="TimeModification">
+      <Hierarchy hasAll="true" allMemberName="All Times">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="YearModification" column="YearModification" type="Numeric" uniqueMembers="true"/>
+        <Level name="MonthModification" column="MonthModification" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Product Dimension -->
+    <Dimension name="Product">
+      <Hierarchy hasAll="true" allMemberName="All Products">
+        <Table name="FactTable1" schema="base_gnajeralavid"/>
+        <Level name="Barcode" column="barcode" type="String" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Measures -->
+    <Measure name="ProductCount" column="barcode" aggregator="distinct-count" visible="true"/>
+    <Measure name="VersionCount" column="version_id" aggregator="count" visible="true"/>
+  </Cube>
+
+  <!-- OFF Cube 2 -->
+  <Cube name="OpenFoodFactsCube2">
+    <Table name="FactTable2" schema="base_gnajeralavid"/>
+
+    <!-- Using Shared Version Dimension -->
+    <DimensionUsage source="Version" name="Version" foreignKey="version_id"/>
+
+    <!-- Using Shared Category Dimension -->
+    <DimensionUsage source="Category" name="Category" foreignKey="pnns2"/>
+
+    <!-- Using Shared Contributor Dimension -->
+    <DimensionUsage source="Contributor" name="Contributor" foreignKey="pseudo"/>
+
+    <!-- Time Dimension -->
+    <Dimension name="Time">
+      <Hierarchy hasAll="true" allMemberName="All Times">
+        <Table name="FactTable2" schema="base_gnajeralavid"/>
+        <Level name="YearModification" column="YearModification" type="Numeric" uniqueMembers="true"/>
+        <Level name="MonthModification" column="MonthModification" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Nutriscore Dimension -->
+    <Dimension name="Nutriscore">
+      <Hierarchy hasAll="true" allMemberName="All Nutriscores">
+        <Table name="FactTable2" schema="base_gnajeralavid"/>
+        <Level name="NutriScoreLettre" column="nutriscore_lettre" type="String" uniqueMembers="false"/>
+        <Level name="NutritionScoreFR" column="nutrition_score_fr" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Measures -->
+    <Measure name="ContributorCount" column="pseudo" aggregator="distinct-count" visible="true"/>
+    <Measure name="NutritionScoreMean" column="nutrition_score_fr" aggregator="avg" visible="true"/>
+    <CalculatedMember name="NutriScoreLetter" dimension="Measures">
+      <Formula>
+        IIf(
+          [Measures].[NutritionScoreMean] &lt; 0, 'A',
+          IIf(
+            [Measures].[NutritionScoreMean] &gt;= 0 AND [Measures].[NutritionScoreMean] &lt;= 2, 'B',
+            IIf(
+              [Measures].[NutritionScoreMean] &gt;= 3 AND [Measures].[NutritionScoreMean] &lt;= 10, 'C',
+              IIf(
+                [Measures].[NutritionScoreMean] &gt;= 11 AND [Measures].[NutritionScoreMean] &lt;= 18, 'D', 
+                'E'
+              )
+            )
+          )
+        )
+      </Formula>
+    </CalculatedMember>
+  </Cube>
+</Schema>

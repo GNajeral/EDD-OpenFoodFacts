@@ -1,0 +1,37 @@
+<Schema name="OpenFoodFactsAnalysisDegraded">
+  <Cube name="OpenFoodFactsCube">
+    <Table name="fact_table" schema="base_gnajeralavid"/>
+
+    <!-- Time Dimension -->
+    <Dimension name="Time">
+      <Hierarchy hasAll="true" allMemberName="All Times" primaryKey="version_id">
+        <Table name="fact_table" schema="base_gnajeralavid"/>
+        <Level name="YearCreation" column="YearCreation" type="Numeric" uniqueMembers="true"/>
+        <Level name="YearModification" column="YearModification" type="Numeric" uniqueMembers="true"/>
+        <Level name="MonthModification" column="MonthModification" type="Numeric" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Product Dimension -->
+    <Dimension name="Product">
+      <Hierarchy hasAll="true" allMemberName="All Products" primaryKey="version_id">
+        <Table name="fact_table" schema="base_gnajeralavid"/>
+        <Level name="NutriScorePresence" column="nutriscore_presence" type="String" uniqueMembers="true"/>
+        <Level name="Barcode" column="barcode" type="String" uniqueMembers="true"/>
+        <Level name="VersionId" column="version_id" type="String" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Contributor Dimension -->
+    <Dimension name="Contributor">
+      <Hierarchy hasAll="true" allMemberName="All NutriScore" primaryKey="pseudo">
+        <Table name="fact_table" schema="base_gnajeralavid"/>
+        <Level name="Pseudo" column="pseudo" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <!-- Measures -->
+    <Measure name="Product Count" column="barcode" aggregator="distinct-count" visible="true"/>
+    <Measure name="Version Count" column="version_id" aggregator="count" visible="true"/>
+  </Cube>
+</Schema>
