@@ -1,0 +1,53 @@
+QUERY 1: Number of products per contributor type (on rows) and creation year (on columns)
+
+SELECT [TimeCreation].[YearCreation].Members ON COLUMNS,
+  ORDER([Contributor].[Pseudo].Members, [Measures].[ProductCount], DESC) ON ROWS
+FROM [OpenFoodFactsCube1]
+WHERE [Measures].[ProductCount]
+
+
+QUERY 2: Number of versions (i.e., updates) per year and month (on rows) having vs. not having Nutri-Score (on columns)
+
+SELECT [Version.By NutriScorePresence].[NutriScorePresence].Members ON COLUMNS,
+  NON EMPTY [TimeModification].[MonthModification].Members ON ROWS
+FROM [OpenFoodFactsCube1]
+WHERE [Measures].[VersionCount]
+
+QUERY 3: Number of products per category (on rows) and creation year (on columns)
+
+SELECT [TimeCreation].[YearCreation].Members ON COLUMNS,
+  ORDER([Category].[Pnns2].Members, [Measures].[ProductCount], DESC) ON ROWS
+FROM [OpenFoodFactsCube1]
+WHERE [Measures].[ProductCount]
+
+
+QUERY 4: Calculate the mean nutrition score in each modification year (on columns) for each category (on rows)
+
+SELECT [Time].[YearModification].Members ON COLUMNS,
+  [Category].Children ON ROWS
+FROM [OpenFoodFactsCube2]
+WHERE [Measures].[NutriScoreLetter]
+
+
+QUERY 5: Calculate the mean nutrition score for each category (on rows) and nova group (on columns)
+
+SELECT [Version.By NovaGroup].[NovaGroup].Members ON COLUMNS,
+  [Category].Children ON ROWS
+FROM [OpenFoodFactsCube2]
+WHERE [Measures].[NutriScoreLetter]
+
+
+QUERY 6: Calculate the nº of distinct contributors for each nova group (on columns) and category (on rows)
+
+SELECT [Version.By NovaGroup].[NovaGroup].Members  ON COLUMNS,
+  [Category].Children ON ROWS
+FROM [OpenFoodFactsCube2]
+WHERE [Measures].[ContributorCount]
+
+
+QUERY 7: Calculate the nº of distinct contributors for each nova group (on rows) and nutriscore (on columns)
+
+SELECT [Nutriscore].[NutriScoreLettre].Members ON COLUMNS,
+  [Version.By NovaGroup].[NovaGroup].Members ON ROWS
+FROM [OpenFoodFactsCube2]
+WHERE [Measures].[ContributorCount]
