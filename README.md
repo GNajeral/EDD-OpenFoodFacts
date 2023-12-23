@@ -1,6 +1,6 @@
 # EDD-OpenFoodFacts
 
-# Refer to the PDF README to see everything related to the development of the project
+# Refer to the REPORT to see everything related to the development of the project
 <br>
 --> The final Data Mart version is created with the SQL file named "SchemaCreation.sql" inside the "DB" folder  <br>
 --> All Kettle transformations and jobs can be found in the "Kettle" folder  <br>
